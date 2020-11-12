@@ -23,8 +23,6 @@ curated_df <- single_site_date_df %>%
   filter(!is.na(scientificName), 
          taxonRank == "species") %>% 
   select(-taxonRank) %>% 
-  mutate(decimalLatitude = round(decimalLatitude, 2), 
-         decimalLongitude = round(decimalLongitude, 2)) %>% 
   unite(sitename, c("siteID", "plotID", "subplotID"), sep = "_") %>% 
   rename(lat = decimalLatitude, 
          lon = decimalLongitude, 
