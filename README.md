@@ -11,46 +11,6 @@ Metadata for original and curated datasets are in this README.
 - Product ID *DP1.10058.001*
 - [Data portal link](https://data.neonscience.org/data-products/DP1.10058.001)
 - Summary: Plant cover for each species of plant was estimated in six 1m2 subplots within 400m2 plots, where plant cover was percent of subplot ground covered as viewed from above. Each site has around 30 plots, with sites distributed across the USA. Plant cover was taken multiple times per year over multiple years, depending on the site. 
-- Columns: 
-  - `uid`
-  - `namedLocation`             
-  - `domainID`                   
-  - `siteID`                    
-  - `decimalLatitude`            
-  - `decimalLongitude`          
-  - `geodeticDatum`              
-  - `coordinateUncertainty`     
-  - `elevation`                  
-  - `elevationUncertainty`      
-  - `nlcdClass`                  
-  - `plotID`                    
-  - `subplotID`                  
-  - `endDate`                   
-  - `boutNumber`                 
-  - `samplingProtocolVersion`   
-  - `divDataType`                
-  - `targetTaxaPresent`         
-  - `otherVariablesPresent`      
-  - `taxonID`                   
-  - `scientificName`             
-  - `taxonRank`                 
-  - `family`                     
-  - `nativeStatusCode`          
-  - `identificationQualifier`    
-  - `taxonIDRemarks`            
-  - `morphospeciesID`            
-  - `morphospeciesIDRemarks`    
-  - `identificationReferences`   
-  - `otherVariables`            
-  - `percentCover`               
-  - `heightPlantOver300cm`      
-  - `heightPlantSpecies`         
-  - `remarks`                   
-  - `measuredBy`                 
-  - `recordedBy`                
-  - `samplingImpractical`        
-  - `samplingImpracticalRemarks`
-  - `biophysicalCriteria`    
 - Additional useful information
   - Some plants have vouchers/tissues collected that may be useful for genetic analyses
   - The only data for plant height is `heightPlantOver300cm`, which indicates whether plants are taller than 9.8 feet
@@ -69,13 +29,13 @@ Metadata for original and curated datasets are in this README.
 
 Columns: 
 
-- `species`
-- `lat`
-- `lon`
-- `sitename`
-- `date`
-- `canopy_cover`
-- `uid` 
+- `species`: species identification
+- `lat`: latitude of plot (decimal degrees)
+- `lon`: longitude of plot (decimal degrees)
+- `sitename`: site, plot, and subplot info combined in format `sitecode_plotID_subplotID`; e.g., `DSNY_DSNY_017_32.4.1` is site DSNY, plot 017, subplot 32.4.1
+- `date`: date of end of sampling in format YYYY-MM-DD
+- `canopy_cover`: amount of ground covered by that species in 1m2 area (%)
+- `uid`: unique identifier for each record as assigned by NEON
 
 Summary figures and stats: 
 
