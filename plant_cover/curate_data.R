@@ -12,16 +12,18 @@ if(!dir.exists(paste0(download_loc, cover_product_id))){
 }
 
 ###########Clean up data###########
-single_site_date_df <- neon_read(table = "div_1m2Data-basic", 
-                                 product = cover_product_id, site = "SJER", 
-                                 start_date = "2019-04-01", end_date = "2019-04-30")
+all_sites_df <- neon_read(table = "div_1m2Data-basic", 
+                                 product = cover_product_id, 
+                                 start_date = "2013-03-01", end_date = "2020-01-30")
 
-curated_df <- single_site_date_df %>% 
+curated_df <- all_sites_df %>% 
   select(uid, siteID, decimalLatitude, decimalLongitude,
          plotID, subplotID, endDate, scientificName, taxonRank,
          percentCover) %>% 
   filter(!is.na(scientificName), 
-         taxonRank == "species") %>% 
+         taxonRank == "species", 
+         decimalLongitude > -140, 
+         decimalLatitude > 25 & decimalLatitude < 50) %>% 
   select(-taxonRank) %>% 
   unite(sitename, c("siteID", "plotID", "subplotID"), sep = "_") %>% 
   rename(lat = decimalLatitude, 
