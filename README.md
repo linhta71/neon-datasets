@@ -65,3 +65,58 @@ Summary figures and stats:
 - Plot of number of records per day across entire time range: 
 
 ![](plant_cover/records_by_date.png)
+
+### 2. Phenology images
+
+#### Original data
+
+- **Phenology images** dataset 
+- Product ID *DP1.00033.001*
+- [Data portal link](https://data.neonscience.org/data-products/DP1.00033.001)
+  - Data stored on [PhenoCam](https://phenocam.sr.unh.edu/webcam/about/) website [here](https://phenocam.sr.unh.edu/webcam/network/search/?sitename=&type=&primary_vegtype=&dominant_species=&active=unknown&fluxdata=unknown&group=neon); probably have to be downloaded individually by site? 
+- Summary: Images (RGB and IR) taken from tops of towers at each site every 15 minutes, available for most sites back to early 2017. 
+
+### 3. Phenology measurements
+
+#### Original data
+
+- **Plant phenology observations** dataset 
+- Product ID *DP1.10055.001*
+- [Data portal link](https://data.neonscience.org/data-products/DP1.10055.001)
+- Summary: At each site for multiple years, phenophase measurements for ~100 individual plants made up to multiple times a week depending on phenology activity. 
+
+### 4. Mammal diversity
+
+#### Original data
+
+- **Small mammal box trapping** dataset 
+- Product ID *DP1.10072.001*
+- [Data portal link](https://data.neonscience.org/data-products/DP1.10072.001)
+- Summary: For all sites starting in 2016, individual small mammals were trapped and identified 4-6 times per year. 
+
+### 5. Bird diversity
+
+#### Original data
+
+- **Breeding landbird point counts** dataset 
+- Product ID *DP1.10003.001*
+- [Data portal link](https://data.neonscience.org/data-products/DP1.10003.001)
+- Summary: Species identifications of individual non-large and non-aquatic birds from a point. Each site has 5-10 grids with 9 points per grid (45-90 points), with counts occurring once or twice a year since 2017 for most sites. 
+
+### 6. Mosquito diversity
+
+#### Original data
+
+- **Mosquitoes sampled from CO2 traps** dataset 
+- Product ID *DP1.10043.001*
+- [Data portal link](https://data.neonscience.org/data-products/DP1.10043.001)
+- Summary: All sites were sampled, starting in 2016 for some, once to twice a week at 10 plots per site (note: sampling design changed somewhat in 2018). Subsamples from traps were identified to taxon and includes abundance numbers. 
+
+### 7. Beetle diversity
+
+#### Original data
+
+- **Ground beetles sampled from pitfall traps** dataset 
+- Product ID *DP1.10022.001*
+- [Data portal link](https://data.neonscience.org/data-products/DP1.10022.001)
+- Summary: All sites were sampled, starting in 2016 for most, twice a week at 10 plots per site. Individuals from traps were identified to species. 
