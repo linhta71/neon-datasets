@@ -12,6 +12,7 @@ library(tidyr)
 library(knitr)
 library(kableExtra)
 library(ggplot2)
+library(usmap)
 ```
 
 ### 1. Plant cover
@@ -31,10 +32,8 @@ library(ggplot2)
 - `plant_cover` folder
   - Scripts
     - `curate_data.R` cleans up data
-    - `summarize_data.R` creates summary stats, tables, and figures of data
   - Derived data and figures
     - `plant_cover.csv` is curated data
-    - All `.png` images result from `summarize_data.R` and are displayed below
 
 #### Curated data details
 
@@ -70,7 +69,7 @@ sites_plots <- plant_cover %>%
 
 ```{r, echo=FALSE}
 map_background <- map_data("state") 
-         
+
 ggplot() +
   geom_polygon(data = map_background, aes(x = long, y = lat, group = group), 
                fill = "white", color = "black") + 
@@ -130,7 +129,105 @@ ggplot() +
 - **Plant phenology observations** dataset 
 - Product ID *DP1.10055.001*
 - [Data portal link](https://data.neonscience.org/data-products/DP1.10055.001)
-- Summary: At each site for multiple years, phenophase measurements for ~100 individual plants made up to multiple times a week depending on phenology activity. 
+- Summary: Phenophase status recorded for ~100 individual plants at each site across multiple years. Records are made for all plants up to multiple times a week depending on phenology activity. Each site has one transect along which all plants are included, with each individual plant tracked across each year. Tracked phenophases include initial growth, young leaves/needles, open flowers/pollen cones, colored leaves/needles, and falling leaves/needles. 
+
+#### File structure
+
+- `phenology` folder
+  - Scripts
+    - `curate_data.R` cleans up data
+  - Derived data and figures
+    - `phenology.csv` is curated data
+
+#### Curated data details
+
+Columns: 
+
+- `individualID`: unique identifier assigned to each plant
+- `species`: species identification
+- `lat`: latitude of plot (decimal degrees)
+- `lon`: longitude of plot (decimal degrees)
+- `sitename`: site and unique transect identifier, in the format site_plotID
+- `first_flower_date`: earliest date per year for each individual to reach at least 50% of flowers open (i.e., `open flowers` is categorized as `50-74%`)
+- `uid_pheno`: unique identifier for the phenophase record
+- `uid_ind`: unique identifier for the individual record
+
+Summary figures and stats: 
+
+```{r, echo=FALSE, results='hide', message=FALSE, warning=FALSE}
+phenology <- read.csv("phenology/phenology.csv")
+```
+
+**Locations**
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+sites_transects <- phenology %>% 
+  separate(sitename, sep = "_", into = c("site", "transect")) %>% 
+  group_by(site) %>% 
+  summarise(count = n_distinct(transect)) %>% 
+  rename(Site = site, Transects = count)
+```
+
+- `r nrow(sites_transects)` sites with `r sum(sites_transects$Transects)` total transects
+- From `r min(sites_transects$Transects)` to `r max(sites_transects$Transects)` transects per site
+- Map of transect locations: 
+
+```{r, echo=FALSE}
+pheno_locs <- phenology %>% 
+  select(lon, lat) %>% 
+  drop_na() %>% 
+  usmap_transform()
+
+plot_usmap() +
+  geom_point(data = pheno_locs, aes(x = lon.1, y = lat.1), 
+             color = "blue", shape = 4) +
+  theme_void()
+```
+
+**Taxonomy**
+
+- `r nrow(phenology)` records for `r length(unique(phenology$species))` species
+- Table of the 20 species with the most records and their number of occurrences: 
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+species_counts <- phenology %>%
+  group_by(species) %>%
+  summarize(count = n()) %>%
+  arrange(desc(count)) %>%
+  slice(1:20) %>%
+  rename(Species = species, Occurrences = count)
+kable(species_counts, format = "markdown")
+```
+
+- Table of the 20 species with the most individuals recorded and the number of individuals: 
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+inds_counts <- phenology %>% 
+  group_by(species) %>% 
+  summarize(count = n_distinct(individualID)) %>% 
+  arrange(desc(count)) %>% 
+  slice(1:20) %>% 
+  rename(Species = species, Individuals = count)
+kable(inds_counts, format = "markdown")
+```
+
+**Time**
+
+- Records taken on `r length(unique(as.Date(phenology$first_flower_date)))` days from `r min(as.Date(phenology$first_flower_date))` to `r max(as.Date(phenology$first_flower_date))`
+- Plot of number of records per day across entire time range: 
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+dates <- phenology %>% 
+  select(first_flower_date) %>% 
+  mutate(first_flower_date = as.Date(first_flower_date)) %>% 
+  group_by(first_flower_date) %>% 
+  summarize(count = n()) %>% 
+  rename(Date = first_flower_date, Records = count)
+
+ggplot() +
+  geom_col(data = dates, aes(x = Date, y = Records), color = "black", fill = "black") +
+  theme_classic()
+```
 
 ### 3. Phenology images
 

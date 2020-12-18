@@ -29,12 +29,8 @@ README.
   - `plant_cover` folder
       - Scripts
           - `curate_data.R` cleans up data
-          - `summarize_data.R` creates summary stats, tables, and
-            figures of data
       - Derived data and figures
           - `plant_cover.csv` is curated data
-          - All `.png` images result from `summarize_data.R` and are
-            displayed below
 
 #### Curated data details
 
@@ -109,9 +105,109 @@ Summary figures and stats:
   - Product ID *DP1.10055.001*
   - [Data portal
     link](https://data.neonscience.org/data-products/DP1.10055.001)
-  - Summary: At each site for multiple years, phenophase measurements
-    for ~100 individual plants made up to multiple times a week
-    depending on phenology activity.
+  - Summary: Phenophase status recorded for ~100 individual plants at
+    each site across multiple years. Records are made for all plants up
+    to multiple times a week depending on phenology activity. Each site
+    has one transect along which all plants are included, with each
+    individual plant tracked across each year. Tracked phenophases
+    include initial growth, young leaves/needles, open flowers/pollen
+    cones, colored leaves/needles, and falling leaves/needles.
+
+#### File structure
+
+  - `phenology` folder
+      - Scripts
+          - `curate_data.R` cleans up data
+      - Derived data and figures
+          - `phenology.csv` is curated data
+
+#### Curated data details
+
+Columns:
+
+  - `individualID`: unique identifier assigned to each plant
+  - `species`: species identification
+  - `lat`: latitude of plot (decimal degrees)
+  - `lon`: longitude of plot (decimal degrees)
+  - `sitename`: site and unique transect identifier, in the format
+    site\_plotID
+  - `first_flower_date`: earliest date per year for each individual to
+    reach at least 50% of flowers open (i.e., `open flowers` is
+    categorized as `50-74%`)
+  - `uid_pheno`: unique identifier for the phenophase record
+  - `uid_ind`: unique identifier for the individual record
+
+Summary figures and stats:
+
+**Locations**
+
+  - 47 sites with 72 total transects
+  - From 1 to 3 transects per site
+  - Map of transect locations:
+
+![](README_files/figure-gfm/unnamed-chunk-10-1.png)<!-- -->
+
+**Taxonomy**
+
+  - 3124 records for 103 species
+  - Table of the 20 species with the most records and their number of
+    occurrences:
+
+| Species                                | Occurrences |
+| :------------------------------------- | ----------: |
+| Liriodendron tulipifera L.             |         141 |
+| Acer rubrum L.                         |         109 |
+| Gaultheria shallon Pursh               |         106 |
+| Betula glandulosa/nana                 |         100 |
+| Zinnia acerosa (DC.) A. Gray           |          98 |
+| Vaccinium vitis-idaea L.               |          90 |
+| Lonicera maackii (Rupr.) Herder        |          88 |
+| Acer pensylvanicum L.                  |          86 |
+| Juglans nigra L.                       |          85 |
+| Pithecellobium dulce (Roxb.) Benth.    |          83 |
+| Minuartia obtusiloba (Rydb.) House     |          77 |
+| Erodium botrys (Cav.) Bertol.          |          74 |
+| Poa pratensis L.                       |          69 |
+| Prosopis glandulosa Torr.              |          69 |
+| Urochloa maxima (Jacq.) R. Webster     |          69 |
+| Larrea tridentata (DC.) Coville        |          67 |
+| Thelesperma filifolium (Hook.) A. Gray |          67 |
+| Lindera benzoin (L.) Blume             |          65 |
+| Symphoricarpos occidentalis Hook.      |          62 |
+| Rhamnus davurica Pall.                 |          59 |
+
+  - Table of the 20 species with the most individuals recorded and the
+    number of individuals:
+
+| Species                                | Individuals |
+| :------------------------------------- | ----------: |
+| Liriodendron tulipifera L.             |          80 |
+| Acer rubrum L.                         |          66 |
+| Acer pensylvanicum L.                  |          63 |
+| Gaultheria shallon Pursh               |          56 |
+| Vaccinium vitis-idaea L.               |          54 |
+| Betula glandulosa/nana                 |          51 |
+| Zinnia acerosa (DC.) A. Gray           |          49 |
+| Poa pratensis L.                       |          45 |
+| Thelesperma filifolium (Hook.) A. Gray |          41 |
+| Artemisia absinthium L.                |          40 |
+| Symphoricarpos occidentalis Hook.      |          39 |
+| Lindera benzoin (L.) Blume             |          36 |
+| Erodium botrys (Cav.) Bertol.          |          35 |
+| Artemisia tridentata Nutt.             |          34 |
+| Lonicera maackii (Rupr.) Herder        |          34 |
+| Minuartia obtusiloba (Rydb.) House     |          33 |
+| Juglans nigra L.                       |          32 |
+| Larrea tridentata (DC.) Coville        |          31 |
+| Prosopis glandulosa Torr.              |          31 |
+| Pithecellobium dulce (Roxb.) Benth.    |          30 |
+
+**Time**
+
+  - Records taken on 635 days from 2013-10-02 to 2020-10-21
+  - Plot of number of records per day across entire time range:
+
+![](README_files/figure-gfm/unnamed-chunk-13-1.png)<!-- -->
 
 ### 3\. Phenology images
 
