@@ -62,5 +62,17 @@ combined <- left_join(pheno_records, individual_records, by = "individualID") %>
   rename(species = scientificName, lat = decimalLatitude, lon = decimalLongitude, 
          sitename = plotID, first_flower_date = date)
 
+###########Subset data###########
+species_list1 <- readLines("phenology/NPN_species_subset1_notes.csv")
+
+species_list2 <- read.csv("phenology/NPN_species_subset2.csv", header = FALSE)
+species_list2 <- tidyr::unite(species_list2, genus_species, V1:V2, sep = " ")
+species_list2 <- species_list2[,1]
+
+species_list_comp <- c(species_list1, species_list2)
+
+combined_subset <- combined %>% 
+  filter(grepl(paste(species_list_comp, collapse = "|"), species))
+
 ###########Save data###########
-write.csv(combined, file = "phenology/phenology.csv", row.names = FALSE)
+write.csv(combined_subset, file = "phenology/phenology.csv", row.names = FALSE)

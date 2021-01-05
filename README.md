@@ -126,7 +126,9 @@ Summary figures and stats:
 Columns:
 
   - `individualID`: unique identifier assigned to each plant
-  - `species`: species identification
+  - `species`: species identification, including only species from [this
+    NPN-based
+    list](https://docs.google.com/document/d/1RnuLpn7sKXCJsJaM1UvufTpWRxXNYkgrRHPCijCIM1E/edit)
   - `lat`: latitude of plot (decimal degrees)
   - `lon`: longitude of plot (decimal degrees)
   - `sitename`: site and unique transect identifier, in the format
@@ -141,70 +143,46 @@ Summary figures and stats:
 
 **Locations**
 
-  - 47 sites with 72 total transects
-  - From 1 to 3 transects per site
+  - 13 sites with 17 total transects
+  - From 1 to 2 transects per site
   - Map of transect locations:
 
 ![](README_files/figure-gfm/unnamed-chunk-10-1.png)<!-- -->
 
 **Taxonomy**
 
-  - 3124 records for 103 species
-  - Table of the 20 species with the most records and their number of
-    occurrences:
+  - 528 records for 9 species
+  - Table of all species ordered by number of occurrences:
 
-| Species                                | Occurrences |
-| :------------------------------------- | ----------: |
-| Liriodendron tulipifera L.             |         141 |
-| Acer rubrum L.                         |         109 |
-| Gaultheria shallon Pursh               |         106 |
-| Betula glandulosa/nana                 |         100 |
-| Zinnia acerosa (DC.) A. Gray           |          98 |
-| Vaccinium vitis-idaea L.               |          90 |
-| Lonicera maackii (Rupr.) Herder        |          88 |
-| Acer pensylvanicum L.                  |          86 |
-| Juglans nigra L.                       |          85 |
-| Pithecellobium dulce (Roxb.) Benth.    |          83 |
-| Minuartia obtusiloba (Rydb.) House     |          77 |
-| Erodium botrys (Cav.) Bertol.          |          74 |
-| Poa pratensis L.                       |          69 |
-| Prosopis glandulosa Torr.              |          69 |
-| Urochloa maxima (Jacq.) R. Webster     |          69 |
-| Larrea tridentata (DC.) Coville        |          67 |
-| Thelesperma filifolium (Hook.) A. Gray |          67 |
-| Lindera benzoin (L.) Blume             |          65 |
-| Symphoricarpos occidentalis Hook.      |          62 |
-| Rhamnus davurica Pall.                 |          59 |
+| Species                         | Occurrences |
+| :------------------------------ | ----------: |
+| Acer rubrum L.                  |         109 |
+| Lonicera maackii (Rupr.) Herder |          88 |
+| Juglans nigra L.                |          85 |
+| Larrea tridentata (DC.) Coville |          67 |
+| Lindera benzoin (L.) Blume      |          65 |
+| Prosopis velutina Woot.         |          58 |
+| Acer rubrum L. var. rubrum      |          43 |
+| Glycine max (L.) Merr.          |           7 |
+| Zea mays L.                     |           6 |
 
-  - Table of the 20 species with the most individuals recorded and the
-    number of individuals:
+  - Table of all species ordered by number of individuals:
 
-| Species                                | Individuals |
-| :------------------------------------- | ----------: |
-| Liriodendron tulipifera L.             |          80 |
-| Acer rubrum L.                         |          66 |
-| Acer pensylvanicum L.                  |          63 |
-| Gaultheria shallon Pursh               |          56 |
-| Vaccinium vitis-idaea L.               |          54 |
-| Betula glandulosa/nana                 |          51 |
-| Zinnia acerosa (DC.) A. Gray           |          49 |
-| Poa pratensis L.                       |          45 |
-| Thelesperma filifolium (Hook.) A. Gray |          41 |
-| Artemisia absinthium L.                |          40 |
-| Symphoricarpos occidentalis Hook.      |          39 |
-| Lindera benzoin (L.) Blume             |          36 |
-| Erodium botrys (Cav.) Bertol.          |          35 |
-| Artemisia tridentata Nutt.             |          34 |
-| Lonicera maackii (Rupr.) Herder        |          34 |
-| Minuartia obtusiloba (Rydb.) House     |          33 |
-| Juglans nigra L.                       |          32 |
-| Larrea tridentata (DC.) Coville        |          31 |
-| Prosopis glandulosa Torr.              |          31 |
-| Pithecellobium dulce (Roxb.) Benth.    |          30 |
+| Species                         | Individuals |
+| :------------------------------ | ----------: |
+| Acer rubrum L.                  |          66 |
+| Lindera benzoin (L.) Blume      |          36 |
+| Lonicera maackii (Rupr.) Herder |          34 |
+| Juglans nigra L.                |          32 |
+| Larrea tridentata (DC.) Coville |          31 |
+| Acer rubrum L. var. rubrum      |          28 |
+| Prosopis velutina Woot.         |          25 |
+| Glycine max (L.) Merr.          |           7 |
+| Zea mays L.                     |           6 |
 
 **Time**
 
-  - Records taken on 635 days from 2013-10-02 to 2020-10-21
+  - Records taken on 140 days from 2014-04-16 to 2020-06-17
   - Plot of number of records per day across entire time range:
 
 ![](README_files/figure-gfm/unnamed-chunk-13-1.png)<!-- -->
