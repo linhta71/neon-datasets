@@ -5,6 +5,10 @@ Contains scripts for downloading and cleaning data, and the resulting
 data files. Metadata for original and curated datasets are in this
 README.
 
+### Data Use
+
+These data are derived from Public Domain NEON data, but should be cited when used. See [NEON Data Policies & Citation Guidelines](https://www.neonscience.org/data-samples/data-policies-citation) for more information.
+
 ### 1\. Plant cover
 
 #### Original data
