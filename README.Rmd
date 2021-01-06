@@ -13,6 +13,7 @@ library(knitr)
 library(kableExtra)
 library(ggplot2)
 library(usmap)
+library(taxize)
 ```
 
 ### 1. Plant cover
@@ -210,6 +211,16 @@ inds_counts <- phenology %>%
   rename(Species = species, Individuals = count)
 kable(inds_counts, format = "markdown")
 ```
+
+- Taxonomic tree of species: 
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
+spnames <- unique(stringr::word(phenology$species, 1, 2))
+out <- classification(spnames, db='ncbi')
+tr <- class2tree(out)
+plot(tr)
+```
+
 
 **Time**
 

@@ -180,12 +180,16 @@ Summary figures and stats:
 | Glycine max (L.) Merr.          |           7 |
 | Zea mays L.                     |           6 |
 
+  - Taxonomic tree of species:
+
+![](README_files/figure-gfm/unnamed-chunk-13-1.png)<!-- -->
+
 **Time**
 
   - Records taken on 140 days from 2014-04-16 to 2020-06-17
   - Plot of number of records per day across entire time range:
 
-![](README_files/figure-gfm/unnamed-chunk-13-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-14-1.png)<!-- -->
 
 ### 3\. Phenology images
 
