@@ -102,12 +102,42 @@ mean_daily_precip <- precip %>%
   filter(count %in% c(364, 365, 366)) %>% 
   select(-count)
 
+ht_product_id <- "DP1.00098.001"
+if(!dir.exists(paste0(download_loc, ht_product_id))){
+  neon_download(product = ht_product_id, type = "expanded", site = pheno_sites)
+}
+
+humid_temp <- neon_read(table = "RH_30min-expanded", 
+                        product = ht_product_id, 
+                        site = pheno_sites)
+
+summary_humid_temp <- humid_temp %>% 
+  filter(!is.na(RHMean), !is.na(tempRHMean)) %>% 
+  filter(horizontalPosition == "000") %>% 
+  select(startDateTime, RHMean, tempRHMean, siteID) %>% 
+  tidyr::separate(startDateTime, c("startDate", "startTime"), sep = " ") %>% 
+  group_by(siteID, startDate) %>% 
+  summarize(count = n(), mean_daily_humid = mean(RHMean), mean_daily_temp = mean(tempRHMean)) %>% 
+  filter(count > 10) %>% 
+  mutate(year = substr(startDate, 1, 4)) %>% 
+  group_by(siteID, year) %>% 
+  summarize(count = n(), 
+            mean_humid = mean(mean_daily_humid), 
+            min_humid = min(mean_daily_humid), 
+            max_humid = max(mean_daily_humid), 
+            mean_temp = mean(mean_daily_temp), 
+            min_temp = min(mean_daily_temp), 
+            max_temp = max(mean_daily_temp)) %>% 
+  filter(count > 180)
+
 combined_subset <- combined_subset %>% 
   mutate(site = substr(sitename, 1, 4), 
          year = substr(first_flower_date, 1, 4))
 
 combined_subset <- left_join(combined_subset, mean_daily_precip, 
                                     by = c("site" = "siteID", "year" = "year"))
+combined_subset <- left_join(combined_subset, summary_humid_temp, 
+                     by = c("site" = "siteID", "year" = "year"))
 
 ###########Save data###########
 write.csv(combined_subset, file = "phenology/phenology.csv", row.names = FALSE)
