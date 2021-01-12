@@ -101,7 +101,8 @@ Summary figures and stats:
 
 #### Original data
 
-  - **Plant phenology observations** dataset
+**Plant phenology observations** dataset
+
   - Product ID *DP1.10055.001*
   - [Data portal
     link](https://data.neonscience.org/data-products/DP1.10055.001)
@@ -113,11 +114,38 @@ Summary figures and stats:
     include initial growth, young leaves/needles, open flowers/pollen
     cones, colored leaves/needles, and falling leaves/needles.
 
+**Precipitation** dataset
+
+  - Product ID *DP1.00006.001*
+  - [Data portal
+    link](https://data.neonscience.org/data-products/DP1.00006.001)
+  - Summary: Three methods of measuring precipiation were used, with
+    only one or two used at some sites. Primary measurements were with a
+    weighing gauge, second measurements with a tipping bucket on the
+    tower, and throughfall measurements with tipping buckets on the
+    ground. Both primary and throughfall methods were known to have
+    errors in the data.
+
+**Relative humidity** dataset
+
+  - Product ID *DP1.00098.001*
+  - [Data portal
+    link](https://data.neonscience.org/data-products/DP1.00098.001)
+  - Summary: At each NEON site, a Vaisala probe sensor collected
+    relative humidity, air temperature, and dew point temperature
+    measurements at every minute and 30 minutes at multiple locations,
+    including one on the tower at the site. There are missing datapoints
+    for all sites.
+
 #### File structure
 
   - `phenology` folder
       - Scripts
           - `curate_data.R` cleans up data
+      - Input data
+          - `NPN_species_subset1_notes.csv` and
+            `NPN_species_subset2.csv` contain lists of species from NPN
+            with sequenced genomes
       - Derived data and figures
           - `phenology.csv` is curated data
 
@@ -138,6 +166,27 @@ Columns:
     categorized as `50-74%`)
   - `uid_pheno`: unique identifier for the phenophase record
   - `uid_ind`: unique identifier for the individual record
+  - `mean_daily_precip`: mean precipitation (millimeters) at that
+    individual’s site in the year of `first_flower_date`, after summing
+    precipitation for each day of year with 48 measurements and taking
+    the mean across the year
+  - `mean_humid`: mean yearly value, from daily mean humidity values
+    calculated from days with at least ten humidity measurements on
+    tower and summarized across years with at least 180 days of values
+    (%)
+  - `min_humid`: same as `mean_humid` but minimum value
+  - `max_humid`: same as `mean_humid` but maximum value
+  - `mean_temp`: mean yearly value, from daily mean air temperature
+    values calculated from days with at least ten temperature
+    measurements on tower and summarized across years with at least 180
+    days of values (C)
+  - `min_temp`: same as `mean_temp` but minimum value
+  - `max_temp`: same as `mean_temp` but maximum value
+  - `gdd`: cumulative growing degree days for date of individual’s
+    `first_flower_date` starting from beginning of year, summed from
+    growing degree day calculated for each day of the year from minimum
+    and maximum daily temperature for days with at least 24 measurements
+    using 10 degrees as cutoff
 
 Summary figures and stats:
 

@@ -172,6 +172,8 @@ for (record in 1:nrow(combined_subset)) {
 } 
 
 combined_subset$gdd <- gdds_flowering_dates
+combined_subset <- combined_subset %>% 
+  select(-site, -year, -count)
 
 ###########Save data###########
 write.csv(combined_subset, file = "phenology/phenology.csv", row.names = FALSE)
