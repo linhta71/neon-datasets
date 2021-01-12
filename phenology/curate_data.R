@@ -81,6 +81,7 @@ pheno_sites <- combined_subset %>%
   summarize(unique(Site))
 pheno_sites <- as.vector(pheno_sites$`unique(Site)`)
 
+# Precipitation
 precip_product_id <- "DP1.00006.001"
 if(!dir.exists(paste0(download_loc, precip_product_id))){
   neon_download(product = precip_product_id, type = "expanded")
@@ -107,6 +108,7 @@ if(!dir.exists(paste0(download_loc, ht_product_id))){
   neon_download(product = ht_product_id, type = "expanded", site = pheno_sites)
 }
 
+# Temperature & relative humidity
 humid_temp <- neon_read(table = "RH_30min-expanded", 
                         product = ht_product_id, 
                         site = pheno_sites)
@@ -138,6 +140,38 @@ combined_subset <- left_join(combined_subset, mean_daily_precip,
                                     by = c("site" = "siteID", "year" = "year"))
 combined_subset <- left_join(combined_subset, summary_humid_temp, 
                      by = c("site" = "siteID", "year" = "year"))
+
+# Flowering date growing degree day
+temp_for_gdd <- humid_temp %>% 
+  filter(horizontalPosition == "000") %>% 
+  filter(!is.na(RHMean), !is.na(tempRHMean)) %>% 
+  tidyr::separate(startDateTime, c("startDate", "startTime"), sep = " ") %>% 
+  mutate(year = substr(startDate, 1, 4)) %>% 
+  select(year, startDate, siteID, tempRHMean)
+
+gdds_flowering_dates <- c()
+for (record in 1:nrow(combined_subset)) {
+  gdd <- temp_for_gdd %>% 
+    filter(year == combined_subset$year[record], siteID == combined_subset$site[record]) %>% 
+    group_by(startDate) %>% 
+    summarize(count = n(), 
+              min_temp = min(tempRHMean), 
+              max_temp = max(tempRHMean), 
+              gdd = ifelse(sum(min_temp, max_temp) / 2 > 10, 
+                           (max_temp + min_temp) / 2 - 10, 0)) %>% 
+    filter(count > 24) %>% 
+    ungroup() %>% 
+    select(-count) %>% 
+    mutate(days_count = nrow(.), 
+           gdd_cum = cumsum(gdd), 
+           site = combined_subset$site[record])
+  gdd_flowering_date <- ifelse(gdd$days_count[1] > 300, 
+                               gdd$gdd_cum[gdd$startDate == combined_subset$first_flower_date[record]],  
+                               NA)
+  gdds_flowering_dates <- c(gdd_flowering_date, gdds_flowering_dates)
+} 
+
+combined_subset$gdd <- gdds_flowering_dates
 
 ###########Save data###########
 write.csv(combined_subset, file = "phenology/phenology.csv", row.names = FALSE)
