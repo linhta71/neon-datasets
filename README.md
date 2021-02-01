@@ -103,7 +103,8 @@ Summary figures and stats:
 
 #### Original data
 
-  - **Plant phenology observations** dataset
+**Plant phenology observations** dataset
+
   - Product ID *DP1.10055.001*
   - [Data portal
     link](https://data.neonscience.org/data-products/DP1.10055.001)
@@ -115,11 +116,38 @@ Summary figures and stats:
     include initial growth, young leaves/needles, open flowers/pollen
     cones, colored leaves/needles, and falling leaves/needles.
 
+**Precipitation** dataset
+
+  - Product ID *DP1.00006.001*
+  - [Data portal
+    link](https://data.neonscience.org/data-products/DP1.00006.001)
+  - Summary: Three methods of measuring precipiation were used, with
+    only one or two used at some sites. Primary measurements were with a
+    weighing gauge, second measurements with a tipping bucket on the
+    tower, and throughfall measurements with tipping buckets on the
+    ground. Both primary and throughfall methods were known to have
+    errors in the data.
+
+**Relative humidity** dataset
+
+  - Product ID *DP1.00098.001*
+  - [Data portal
+    link](https://data.neonscience.org/data-products/DP1.00098.001)
+  - Summary: At each NEON site, a Vaisala probe sensor collected
+    relative humidity, air temperature, and dew point temperature
+    measurements at every minute and 30 minutes at multiple locations,
+    including one on the tower at the site. There are missing datapoints
+    for all sites.
+
 #### File structure
 
   - `phenology` folder
       - Scripts
           - `curate_data.R` cleans up data
+      - Input data
+          - `NPN_species_subset1_notes.csv` and
+            `NPN_species_subset2.csv` contain lists of species from NPN
+            with sequenced genomes
       - Derived data and figures
           - `phenology.csv` is curated data
 
@@ -128,7 +156,9 @@ Summary figures and stats:
 Columns:
 
   - `individualID`: unique identifier assigned to each plant
-  - `species`: species identification
+  - `species`: species identification, including only species from [this
+    NPN-based
+    list](https://docs.google.com/document/d/1RnuLpn7sKXCJsJaM1UvufTpWRxXNYkgrRHPCijCIM1E/edit)
   - `lat`: latitude of plot (decimal degrees)
   - `lon`: longitude of plot (decimal degrees)
   - `sitename`: site and unique transect identifier, in the format
@@ -138,78 +168,79 @@ Columns:
     categorized as `50-74%`)
   - `uid_pheno`: unique identifier for the phenophase record
   - `uid_ind`: unique identifier for the individual record
+  - `mean_daily_precip`: mean precipitation (millimeters) at that
+    individual’s site in the year of `first_flower_date`, after summing
+    precipitation for each day of year with 48 measurements and taking
+    the mean across the year
+  - `mean_humid`: mean yearly value, from daily mean humidity values
+    calculated from days with at least ten humidity measurements on
+    tower and summarized across years with at least 180 days of values
+    (%)
+  - `min_humid`: same as `mean_humid` but minimum value
+  - `max_humid`: same as `mean_humid` but maximum value
+  - `mean_temp`: mean yearly value, from daily mean air temperature
+    values calculated from days with at least ten temperature
+    measurements on tower and summarized across years with at least 180
+    days of values (C)
+  - `min_temp`: same as `mean_temp` but minimum value
+  - `max_temp`: same as `mean_temp` but maximum value
+  - `gdd`: cumulative growing degree days for date of individual’s
+    `first_flower_date` starting from beginning of year, summed from
+    growing degree day calculated for each day of the year from minimum
+    and maximum daily temperature for days with at least 24 measurements
+    using 10 degrees as cutoff
 
 Summary figures and stats:
 
 **Locations**
 
-  - 47 sites with 72 total transects
-  - From 1 to 3 transects per site
+  - 13 sites with 17 total transects
+  - From 1 to 2 transects per site
   - Map of transect locations:
 
 ![](README_files/figure-gfm/unnamed-chunk-10-1.png)<!-- -->
 
 **Taxonomy**
 
-  - 3124 records for 103 species
-  - Table of the 20 species with the most records and their number of
-    occurrences:
+  - 528 records for 9 species
+  - Table of all species ordered by number of occurrences:
 
-| Species                                | Occurrences |
-| :------------------------------------- | ----------: |
-| Liriodendron tulipifera L.             |         141 |
-| Acer rubrum L.                         |         109 |
-| Gaultheria shallon Pursh               |         106 |
-| Betula glandulosa/nana                 |         100 |
-| Zinnia acerosa (DC.) A. Gray           |          98 |
-| Vaccinium vitis-idaea L.               |          90 |
-| Lonicera maackii (Rupr.) Herder        |          88 |
-| Acer pensylvanicum L.                  |          86 |
-| Juglans nigra L.                       |          85 |
-| Pithecellobium dulce (Roxb.) Benth.    |          83 |
-| Minuartia obtusiloba (Rydb.) House     |          77 |
-| Erodium botrys (Cav.) Bertol.          |          74 |
-| Poa pratensis L.                       |          69 |
-| Prosopis glandulosa Torr.              |          69 |
-| Urochloa maxima (Jacq.) R. Webster     |          69 |
-| Larrea tridentata (DC.) Coville        |          67 |
-| Thelesperma filifolium (Hook.) A. Gray |          67 |
-| Lindera benzoin (L.) Blume             |          65 |
-| Symphoricarpos occidentalis Hook.      |          62 |
-| Rhamnus davurica Pall.                 |          59 |
+| Species                         | Occurrences |
+| :------------------------------ | ----------: |
+| Acer rubrum L.                  |         109 |
+| Lonicera maackii (Rupr.) Herder |          88 |
+| Juglans nigra L.                |          85 |
+| Larrea tridentata (DC.) Coville |          67 |
+| Lindera benzoin (L.) Blume      |          65 |
+| Prosopis velutina Woot.         |          58 |
+| Acer rubrum L. var. rubrum      |          43 |
+| Glycine max (L.) Merr.          |           7 |
+| Zea mays L.                     |           6 |
 
-  - Table of the 20 species with the most individuals recorded and the
-    number of individuals:
+  - Table of all species ordered by number of individuals:
 
-| Species                                | Individuals |
-| :------------------------------------- | ----------: |
-| Liriodendron tulipifera L.             |          80 |
-| Acer rubrum L.                         |          66 |
-| Acer pensylvanicum L.                  |          63 |
-| Gaultheria shallon Pursh               |          56 |
-| Vaccinium vitis-idaea L.               |          54 |
-| Betula glandulosa/nana                 |          51 |
-| Zinnia acerosa (DC.) A. Gray           |          49 |
-| Poa pratensis L.                       |          45 |
-| Thelesperma filifolium (Hook.) A. Gray |          41 |
-| Artemisia absinthium L.                |          40 |
-| Symphoricarpos occidentalis Hook.      |          39 |
-| Lindera benzoin (L.) Blume             |          36 |
-| Erodium botrys (Cav.) Bertol.          |          35 |
-| Artemisia tridentata Nutt.             |          34 |
-| Lonicera maackii (Rupr.) Herder        |          34 |
-| Minuartia obtusiloba (Rydb.) House     |          33 |
-| Juglans nigra L.                       |          32 |
-| Larrea tridentata (DC.) Coville        |          31 |
-| Prosopis glandulosa Torr.              |          31 |
-| Pithecellobium dulce (Roxb.) Benth.    |          30 |
+| Species                         | Individuals |
+| :------------------------------ | ----------: |
+| Acer rubrum L.                  |          66 |
+| Lindera benzoin (L.) Blume      |          36 |
+| Lonicera maackii (Rupr.) Herder |          34 |
+| Juglans nigra L.                |          32 |
+| Larrea tridentata (DC.) Coville |          31 |
+| Acer rubrum L. var. rubrum      |          28 |
+| Prosopis velutina Woot.         |          25 |
+| Glycine max (L.) Merr.          |           7 |
+| Zea mays L.                     |           6 |
+
+  - Taxonomic tree of species:
+
+![](README_files/figure-gfm/unnamed-chunk-13-1.png)<!-- -->
 
 **Time**
 
-  - Records taken on 635 days from 2013-10-02 to 2020-10-21
+  - Records taken on 140 days from 2014-04-16 to 2020-06-17
   - Plot of number of records per day across entire time range:
 
-![](README_files/figure-gfm/unnamed-chunk-13-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-14-1.png)<!-- -->
 
 ### 3\. Phenology images
 

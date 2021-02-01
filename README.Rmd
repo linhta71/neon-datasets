@@ -13,6 +13,7 @@ library(knitr)
 library(kableExtra)
 library(ggplot2)
 library(usmap)
+library(taxize)
 ```
 
 ### 1. Plant cover
@@ -126,16 +127,31 @@ ggplot() +
 
 #### Original data
 
-- **Plant phenology observations** dataset 
+**Plant phenology observations** dataset 
+
 - Product ID *DP1.10055.001*
 - [Data portal link](https://data.neonscience.org/data-products/DP1.10055.001)
 - Summary: Phenophase status recorded for ~100 individual plants at each site across multiple years. Records are made for all plants up to multiple times a week depending on phenology activity. Each site has one transect along which all plants are included, with each individual plant tracked across each year. Tracked phenophases include initial growth, young leaves/needles, open flowers/pollen cones, colored leaves/needles, and falling leaves/needles. 
+
+**Precipitation** dataset 
+
+- Product ID *DP1.00006.001*
+- [Data portal link](https://data.neonscience.org/data-products/DP1.00006.001)
+- Summary: Three methods of measuring precipiation were used, with only one or two used at some sites. Primary measurements were with a weighing gauge, second measurements with a tipping bucket on the tower, and throughfall measurements with tipping buckets on the ground. Both primary and throughfall methods were known to have errors in the data. 
+
+**Relative humidity** dataset 
+
+- Product ID *DP1.00098.001*
+- [Data portal link](https://data.neonscience.org/data-products/DP1.00098.001)
+- Summary: At each NEON site, a Vaisala probe sensor collected relative humidity, air temperature, and dew point temperature measurements at every minute and 30 minutes at multiple locations, including one on the tower at the site. There are missing datapoints for all sites. 
 
 #### File structure
 
 - `phenology` folder
   - Scripts
     - `curate_data.R` cleans up data
+  - Input data
+    - `NPN_species_subset1_notes.csv` and `NPN_species_subset2.csv` contain lists of species from NPN with sequenced genomes
   - Derived data and figures
     - `phenology.csv` is curated data
 
@@ -144,13 +160,21 @@ ggplot() +
 Columns: 
 
 - `individualID`: unique identifier assigned to each plant
-- `species`: species identification
+- `species`: species identification, including only species from [this NPN-based list](https://docs.google.com/document/d/1RnuLpn7sKXCJsJaM1UvufTpWRxXNYkgrRHPCijCIM1E/edit)
 - `lat`: latitude of plot (decimal degrees)
 - `lon`: longitude of plot (decimal degrees)
 - `sitename`: site and unique transect identifier, in the format site_plotID
 - `first_flower_date`: earliest date per year for each individual to reach at least 50% of flowers open (i.e., `open flowers` is categorized as `50-74%`)
 - `uid_pheno`: unique identifier for the phenophase record
 - `uid_ind`: unique identifier for the individual record
+- `mean_daily_precip`: mean precipitation (millimeters) at that individual's site in the year of `first_flower_date`, after summing precipitation for each day of year with 48 measurements and taking the mean across the year 
+- `mean_humid`: mean yearly value, from daily mean humidity values calculated from days with at least ten humidity measurements on tower and summarized across years with at least 180 days of values (%)
+- `min_humid`: same as `mean_humid` but minimum value
+- `max_humid`: same as `mean_humid` but maximum value
+- `mean_temp`: mean yearly value, from daily mean air temperature values calculated from days with at least ten temperature measurements on tower and summarized across years with at least 180 days of values (C)
+- `min_temp`: same as `mean_temp` but minimum value
+- `max_temp`: same as `mean_temp` but maximum value
+- `gdd`: cumulative growing degree days for date of individual's `first_flower_date` starting from beginning of year, summed from growing degree day calculated for each day of the year from minimum and maximum daily temperature for days with at least 24 measurements using 10 degrees as cutoff
 
 Summary figures and stats: 
 
@@ -187,7 +211,7 @@ plot_usmap() +
 **Taxonomy**
 
 - `r nrow(phenology)` records for `r length(unique(phenology$species))` species
-- Table of the 20 species with the most records and their number of occurrences: 
+- Table of all species ordered by number of occurrences: 
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 species_counts <- phenology %>%
@@ -199,7 +223,7 @@ species_counts <- phenology %>%
 kable(species_counts, format = "markdown")
 ```
 
-- Table of the 20 species with the most individuals recorded and the number of individuals: 
+- Table of all species ordered by number of individuals: 
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 inds_counts <- phenology %>% 
@@ -210,6 +234,16 @@ inds_counts <- phenology %>%
   rename(Species = species, Individuals = count)
 kable(inds_counts, format = "markdown")
 ```
+
+- Taxonomic tree of species: 
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
+spnames <- unique(stringr::word(phenology$species, 1, 2))
+out <- classification(spnames, db='ncbi')
+tr <- class2tree(out)
+plot(tr)
+```
+
 
 **Time**
 
