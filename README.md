@@ -5,8 +5,6 @@ Contains scripts for downloading and cleaning data, and the resulting
 data files. Metadata for original and curated datasets are in this
 README.
 
-***Data Use*** These data are derived from Public Domain NEON data, but should be cited when used. See [NEON Data Policies & Citation Guidelines](https://www.neonscience.org/data-samples/data-policies-citation) for more information.
-
 ### 1\. Plant cover
 
 #### Original data
@@ -246,7 +244,8 @@ Summary figures and stats:
 
 #### Original data
 
-  - **Phenology images** dataset
+**Phenology images** dataset
+
   - Product ID *DP1.00033.001*
   - [Data portal
     link](https://data.neonscience.org/data-products/DP1.00033.001)
@@ -256,6 +255,44 @@ Summary figures and stats:
         probably have to be downloaded individually by site?
   - Summary: Images (RGB and IR) taken from tops of towers at each site
     every 15 minutes, available for most sites back to early 2017.
+
+**PhenoCam-derived phenology** data
+
+  - [Metadata descriptions](https://phenocam.sr.unh.edu/webcam/tools/)
+    (under “Standard Data Products” tab)
+      - [ROI Image
+        Statistics](https://phenocam.sr.unh.edu/webcam/tools/roi_statistics_format/)
+        files have values, including `gcc`, for each camera
+        image
+      - [PhenoCam 1-day](https://phenocam.sr.unh.edu/webcam/tools/summary_file_format/)
+        files contain daily summaries of values from ROI Image
+        Statistics, including `gcc_90`
+
+#### File structure
+
+  - `pheno_images` folder
+      - Derived data
+          - `targets_gcc.csv` is data curated into targets by EFI
+            Forecasting Challenge
+
+#### Curated data details
+
+Columns:
+
+  - `time`: date
+  - `siteID`: name of NEON site
+  - `gcc_90`: 90th percentile of green chromatic coordinate (GCC) from
+    PhenoCam 1-day DB\_1000 file
+  - `gcc_sd`: standard deviation of recalculated 90th percentile GCC
+    from ROI Image Statistics DB\_1000 file
+
+Summary figures and stats:
+
+  - 8 sites
+
+**GCC time series**
+
+![](README_files/figure-gfm/unnamed-chunk-16-1.png)<!-- -->
 
 ### 4\. Mammal diversity
 
