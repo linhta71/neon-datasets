@@ -268,14 +268,35 @@ Summary figures and stats:
         files contain daily summaries of values from ROI Image
         Statistics, including `gcc_90`
 
+**Weather** dataset
+
+  - From ORNL’s [Daymet](https://daymet.ornl.gov/)
+  - Data downloaded using R package
+    [daymetr](https://github.com/bluegreen-labs/daymetr)
+      - Note: package has not been updated for Daymet Version 4, so 2020
+        data not available
+  - Summary: daily interpolated weather data on 1km x 1km grid for North
+    America
+
 #### File structure
 
   - `pheno_images` folder
+      - Scripts
+          - `curate_weather.R` downloads, cleans, and joins Daymet
+            weather data to GCC dataset
       - Derived data
-          - `targets_gcc.csv` is data curated into targets by EFI
-            Forecasting Challenge
+          - `targets_gcc.csv` is data curated into targets by [EFI
+            Forecasting
+            Challenge](https://ecoforecast.org/efi-rcn-forecast-challenges/)
+            team
+          - `gcc_weather.csv` is joined GCC and Daymet data
 
 #### Curated data details
+
+[The
+script](https://github.com/eco4cast/neon4cast-phenology/blob/master/phenology-workflow.R)
+for downloading and cleaning the phenology data provided by EFI
+Forecasting team
 
 Columns:
 
@@ -285,14 +306,25 @@ Columns:
     PhenoCam 1-day DB\_1000 file
   - `gcc_sd`: standard deviation of recalculated 90th percentile GCC
     from ROI Image Statistics DB\_1000 file
+  - `daylength`: daily day light duration (seconds/day)
+  - `precipitation`: sum of daily precipitation (mm/day)
+  - `radiation`: shortwave radiation flux density (W/m2)
+  - `snow_water_equiv`: amount of water in snow pack (kg/m2)
+  - `max_temp`: daily maximum temperature (C)
+  - `min_temp`: daily minimum temperature (C)
+  - `vapor_pressure`: water vapor pressure (Pa)
 
 Summary figures and stats:
 
-  - 8 sites
+  - 8 sites and 7 weather variables
 
 **GCC time series**
 
 ![](README_files/figure-gfm/unnamed-chunk-16-1.png)<!-- -->
+
+**Data availability across time**
+
+![](README_files/figure-gfm/unnamed-chunk-17-1.png)<!-- -->
 
 ### 4\. Mammal diversity
 

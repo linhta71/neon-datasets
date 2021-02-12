@@ -44,4 +44,4 @@ gcc_weather <- left_join(pheno_images, clean_daymet,
          min_temp = tmin..deg.c., 
          vapor_pressure = vp..Pa.)
 
-write.csv(gcc_weather, "pheno_images/gcc_weather.csv")
+write.csv(gcc_weather, "pheno_images/gcc_weather.csv", row.names = FALSE)
