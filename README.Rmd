@@ -244,7 +244,6 @@ tr <- class2tree(out)
 plot(tr)
 ```
 
-
 **Time**
 
 - Records taken on `r length(unique(as.Date(phenology$first_flower_date)))` days from `r min(as.Date(phenology$first_flower_date))` to `r max(as.Date(phenology$first_flower_date))`
@@ -267,11 +266,90 @@ ggplot() +
 
 #### Original data
 
-- **Phenology images** dataset 
+**Phenology images** dataset 
+
 - Product ID *DP1.00033.001*
 - [Data portal link](https://data.neonscience.org/data-products/DP1.00033.001)
   - Data stored on [PhenoCam](https://phenocam.sr.unh.edu/webcam/about/) website [here](https://phenocam.sr.unh.edu/webcam/network/search/?sitename=&type=&primary_vegtype=&dominant_species=&active=unknown&fluxdata=unknown&group=neon); probably have to be downloaded individually by site? 
 - Summary: Images (RGB and IR) taken from tops of towers at each site every 15 minutes, available for most sites back to early 2017. 
+
+**PhenoCam-derived phenology** data
+
+- [Metadata descriptions](https://phenocam.sr.unh.edu/webcam/tools/) (under "Standard Data Products" tab)
+  - [ROI Image Statistics](https://phenocam.sr.unh.edu/webcam/tools/roi_statistics_format/) files have values, including `gcc`, for each camera image 
+  - [PhenoCam 1-day](https://phenocam.sr.unh.edu/webcam/tools/summary_file_format/) files contain daily summaries of values from ROI Image Statistics, including `gcc_90`
+
+**Weather** dataset
+
+- From ORNL's [Daymet](https://daymet.ornl.gov/) 
+- Data downloaded using R package [daymetr](https://github.com/bluegreen-labs/daymetr)
+  - Note: package has not been updated for Daymet Version 4, so 2020 data not available
+- Summary: daily interpolated weather data on 1km x 1km grid for North America
+
+#### File structure
+
+- `pheno_images` folder
+  - Scripts
+    - `curate_weather.R` downloads, cleans, and joins Daymet weather data to GCC dataset
+  - Derived data
+    - `targets_gcc.csv` is data curated into targets by [EFI Forecasting Challenge](https://ecoforecast.org/efi-rcn-forecast-challenges/) team
+    - `gcc_weather.csv` is joined GCC and Daymet data
+
+#### Curated data details
+
+[The script](https://github.com/eco4cast/neon4cast-phenology/blob/master/phenology-workflow.R) for downloading and cleaning the phenology data provided by EFI Forecasting team
+
+Columns: 
+
+- `time`: date
+- `siteID`: name of NEON site
+- `gcc_90`: 90th percentile of green chromatic coordinate (GCC) from PhenoCam 1-day DB_1000 file
+- `gcc_sd`: standard deviation of recalculated 90th percentile GCC from ROI Image Statistics DB_1000 file
+- `daylength`: daily day light duration (seconds/day)
+- `precipitation`: sum of daily precipitation (mm/day)
+- `radiation`: shortwave radiation flux density (W/m2)
+- `snow_water_equiv`: amount of water in snow pack (kg/m2)
+- `max_temp`: daily maximum temperature (C)
+- `min_temp`: daily minimum temperature (C)
+- `vapor_pressure`: water vapor pressure (Pa)
+
+Summary figures and stats: 
+
+```{r, echo=FALSE, results='hide', message=FALSE, warning=FALSE}
+pheno_images <- read.csv("pheno_images/gcc_weather.csv") %>% 
+  mutate(time = as.Date(time))
+```
+
+- `r length(unique(pheno_images$siteID))` sites and 7 weather variables
+
+**GCC time series**
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+ggplot(pheno_images, aes(x = time, y = gcc_90)) +
+  geom_line() +
+  geom_ribbon(aes(ymin = gcc_90 - gcc_sd, ymax = gcc_90 + gcc_sd), fill = "red") +
+  facet_wrap(~siteID) +
+  labs(x = "Date", y = "GCC") +
+  theme_classic()
+```
+
+**Data availability across time**
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+gcc_weather_avail <- pheno_images %>% 
+  mutate_at(vars(gcc_90:vapor_pressure), function(x) ifelse(!is.na(x), 0, NA)) %>% 
+  pivot_longer(cols = gcc_90:vapor_pressure, names_to = "variable", values_to = "variable_presence") %>% 
+  mutate(variable = factor(variable, levels = c("gcc_90", "gcc_sd", "daylength", "precipitation", "radiation", "snow_water_equiv", "max_temp", "min_temp", "vapor_pressure")))
+
+ggplot(gcc_weather_avail, aes(x = time, y = variable_presence)) +
+  geom_point() +
+  facet_grid(rows = vars(variable), cols = vars(siteID)) +
+  xlab("Year") +
+  theme_classic() +
+  theme(axis.title.y = element_blank(), 
+        axis.text.y = element_blank(), 
+        axis.ticks.y = element_blank())
+```
 
 ### 4. Mammal diversity
 
