@@ -42,7 +42,7 @@ preds <- means %>%
   select(time, siteID, gcc_90, gcc_sd = gcc_sd3)
 
 pred_filename <- paste('phenology', year(now), this_month, this_day, 'PEG.csv', sep = '-')
-readr::write_csv(means, file = pred_filename)
+readr::write_csv(preds, file = pred_filename)
 
 ## metadata
 ## from https://github.com/eco4cast/EFIstandards/blob/master/vignettes/logistic-metadata-example.Rmd
