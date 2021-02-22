@@ -2,7 +2,7 @@ library(dplyr)
 library(ggplot2)
 library(lubridate)
 
-now <- Sys.date()
+now <- Sys.Date()
 this_month <- month(now)
 this_day <- day(now)
 
@@ -39,7 +39,8 @@ means <- gcc %>%
 
 ## create predictions
 preds <- means %>% 
-  select(time, siteID, gcc_90, gcc_sd = gcc_sd3)
+  mutate(forecast = 1, data_assimilation = 0) %>% 
+  select(time, siteID, forecast, data_assimilation, gcc_90, gcc_sd = gcc_sd3) 
 
 pred_filename <- paste('phenology', year(now), this_month, this_day, 'PEG.csv', sep = '-')
 readr::write_csv(preds, file = pred_filename)
