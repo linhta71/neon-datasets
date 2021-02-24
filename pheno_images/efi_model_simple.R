@@ -15,32 +15,27 @@ middle_month <- ifelse(end_month - this_month == 2, this_month + 1, 0)
 file <- 'https://raw.githubusercontent.com/genophenoenvo/neon-datasets/main/pheno_images/targets_gcc.csv'
 gcc <- readr::read_csv(file) %>% 
   mutate(month = month(time), year = year(time), day = day(time), doy = yday(time)) %>% 
-  filter((month == this_month & day > this_day) | (month == end_month & day <= end_day  ) | (month == middle_month))
+  filter((month == this_month & day > this_day) | (month == end_month & day <= end_day  ) | (month == middle_month)) %>% 
+  filter(!(month == 2 & day == 29))
 
 means <- gcc %>% 
-  mutate(time = ymd(paste(2021, sprintf("%02d", month), sprintf("%02d", min(day)), 
-                          sep = '-'))) %>% 
   filter(!is.na(gcc_90) & !is.na(gcc_sd)) %>% 
-  mutate(gcc_sd0 = quantile(gcc_sd, 0.95)) %>% 
-  group_by(siteID) %>% 
-  mutate(gcc_sd1 = quantile(gcc_sd, 0.95)) %>% 
   group_by(month, day, siteID) %>% 
   summarise(n = n(),
-            time = time,
-            gcc_sd3 = sum(gcc_sd) * 4/n,
-            gcc_sd2 = sqrt(var(gcc_90)/sqrt(n-1)),
-            gcc_sd1 = unique(gcc_sd1), #all values the same w/in site
-            gcc_sd0 = unique(gcc_sd0), #all values the same across sites
-            gcc_sd =  median(gcc_sd),
+            time =  ymd(paste(2021, sprintf("%02d", month), sprintf("%02d", min(day)), 
+                              sep = '-')),
+            gcc_sd =  max(gcc_90)/10,
             gcc_90 =  median(gcc_90)) %>% 
-  select(time, siteID, gcc_90, gcc_sd, gcc_sd0, gcc_sd1, gcc_sd2, gcc_sd3) %>% 
+  select(time, siteID, gcc_90, gcc_sd) %>% 
   arrange(siteID, time) %>% 
+  unique() %>% 
   ungroup()
 
 ## create predictions
 preds <- means %>% 
-  mutate(forecast = 1, data_assimilation = 0) %>% 
-  select(time, siteID, forecast, data_assimilation, gcc_90, gcc_sd = gcc_sd3) 
+  mutate(forecast = 1, data_assimilation = 0, mean = signif(gcc_90, 2), sd = signif(gcc_sd, 1)) %>% 
+  select(time, siteID, forecast, data_assimilation, mean, sd) %>% 
+  tidyr::pivot_longer(cols = c('mean', 'sd'), names_to = 'statistic', values_to = 'gcc_90')
 
 pred_filename <- paste('phenology', year(now), this_month, this_day, 'PEG.csv', sep = '-')
 readr::write_csv(preds, file = pred_filename)
