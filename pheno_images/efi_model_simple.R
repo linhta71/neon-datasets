@@ -15,7 +15,7 @@ middle_month <- ifelse(end_month - this_month == 2, this_month + 1, 0)
 file <- 'https://raw.githubusercontent.com/genophenoenvo/neon-datasets/main/pheno_images/targets_gcc.csv'
 gcc <- readr::read_csv(file) %>% 
   mutate(month = month(time), year = year(time), day = day(time), doy = yday(time)) %>% 
-  filter((month == this_month & day > this_day) | (month == end_month & day <= end_day  ) | (month == middle_month)) %>% 
+  filter((month == this_month & day >= this_day) | (month == end_month & day <= end_day  ) | (month == middle_month)) %>% 
   filter(!(month == 2 & day == 29))
 
 means <- gcc %>% 
@@ -37,7 +37,8 @@ preds <- means %>%
   select(time, siteID, forecast, data_assimilation, mean, sd) %>% 
   tidyr::pivot_longer(cols = c('mean', 'sd'), names_to = 'statistic', values_to = 'gcc_90')
 
-pred_filename <- paste('phenology', year(now), this_month, this_day, 'PEG.csv', sep = '-')
+today <- 
+pred_filename <- paste('phenology', now, 'PEG.csv', sep = '-')
 readr::write_csv(preds, file = pred_filename)
 
 ## metadata
