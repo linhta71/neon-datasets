@@ -1,21 +1,30 @@
 library(dplyr)
 library(ggplot2)
 library(lubridate)
+library(data.table)
 
-now <- Sys.Date()
+
+file <- 'https://raw.githubusercontent.com/genophenoenvo/neon-datasets/main/pheno_images/targets_gcc.csv'
+
+gcc_raw <- fread(file)
+
+
+i <- 1
+#for(i in 0){
+now <- Sys.Date() + days(i)
+
 this_month <- month(now)
 this_day <- day(now)
 
-end <- now + days(35)
+end <- now + days(180)
 end_month <- month(end)
 end_day <- day(end)
 
 middle_month <- ifelse(end_month - this_month == 2, this_month + 1, 0)
 
-file <- 'https://raw.githubusercontent.com/genophenoenvo/neon-datasets/main/pheno_images/targets_gcc.csv'
-gcc <- readr::read_csv(file) %>% 
+gcc <- gcc_raw %>% 
   mutate(month = month(time), year = year(time), day = day(time), doy = yday(time)) %>% 
-  filter((month == this_month & day >= this_day) | (month == end_month & day <= end_day  ) | (month == middle_month)) %>% 
+  #  filter((month == this_month & day > this_day) | (month == end_month & day <= end_day  ) | (month > this_month & month < end_month)) %>% 
   filter(!(month == 2 & day == 29))
 
 means <- gcc %>% 
@@ -24,7 +33,7 @@ means <- gcc %>%
   summarise(n = n(),
             time =  ymd(paste(2021, sprintf("%02d", month), sprintf("%02d", min(day)), 
                               sep = '-')),
-            gcc_sd =  max(gcc_90)/10,
+            gcc_sd =  median(gcc_sd)*4,
             gcc_90 =  median(gcc_90)) %>% 
   select(time, siteID, gcc_90, gcc_sd) %>% 
   arrange(siteID, time) %>% 
@@ -32,13 +41,27 @@ means <- gcc %>%
   ungroup()
 
 ## create predictions
-preds <- means %>% 
+preds_wide <- means %>% 
+  mutate(gcc_90 = frollmean(gcc_90, n = 16, align = 'center', na.rm = TRUE), 
+         gcc_sd = frollmean(gcc_sd*2.5, n = 20, align = 'center', na.rm = TRUE)) %>% 
+  filter((month == this_month & day > this_day) | (month == end_month & day <= end_day  ) | (month > this_month & month < end_month)) %>% 
   mutate(forecast = 1, data_assimilation = 0, mean = signif(gcc_90, 2), sd = signif(gcc_sd, 1)) %>% 
-  select(time, siteID, forecast, data_assimilation, mean, sd) %>% 
+  select(time, siteID, forecast, data_assimilation, mean, sd)
+preds <- preds_wide %>%  
   tidyr::pivot_longer(cols = c('mean', 'sd'), names_to = 'statistic', values_to = 'gcc_90')
+## when real time data are available
+# library(forecast)
+# library(hts)
+# library(tidyr)
+# gcc_wide <- gcc %>% 
+#  select(time, siteID, gcc_90) %>% 
+#  pivot_wider(id_cols = time, names_from = siteID, values_from = gcc_90)
 
-today <- 
-pred_filename <- paste('phenology', now, 'PEG.csv', sep = '-')
+# gcc_ts <- ts(gcc_wide, frequency = 365)
+
+# a <- forecast(gcc_ts, h = 180)
+
+pred_filename <- paste('phenology', year(now),  sprintf("%02d", this_month),  sprintf("%02d", this_day), 'PEG.csv', sep = '-')
 readr::write_csv(preds, file = pred_filename)
 
 ## metadata
@@ -98,7 +121,7 @@ coverage <-
                geographicDescription = paste(c("NEON Sites:", neon_sites), sep = ' ', collapse = ' '),
                west = min(plant_cover$lon), east = max(plant_cover$lon), 
                north = max(plant_cover$lat), south = min(plant_cover$lat)
-)
+  )
 
 dataset = eml$dataset(
   title = "PEG phenology prediction",
@@ -163,4 +186,14 @@ my_eml <- eml$eml(dataset = dataset,
 )
 
 eml_validate(my_eml)
-write_eml(my_eml, gsub(pattern = 'csv', replacement = 'xml', pred_filename))
+meta_data_filename <- gsub(pattern = 'csv', replacement = 'xml', pred_filename)
+write_eml(my_eml, meta_data_filename)
+
+aws.s3::put_object(pred_filename, 
+                   bucket = "submissions", 
+                   region="data", 
+                   base_url = "ecoforecast.org")
+aws.s3::put_object(meta_data_filename, 
+                   bucket = "submissions", 
+                   region="data", 
+                   base_url = "ecoforecast.org")
