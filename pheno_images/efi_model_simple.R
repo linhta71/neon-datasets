@@ -3,11 +3,7 @@ library(ggplot2)
 library(lubridate)
 library(data.table)
 
-
-file <- 'https://raw.githubusercontent.com/genophenoenvo/neon-datasets/main/pheno_images/targets_gcc.csv'
-
-gcc_raw <- fread(file)
-
+gcc_raw <- fread('https://data.ecoforecast.org/targets/phenology/phenology-targets.csv.gz')
 
 i <- 1
 #for(i in 0){
