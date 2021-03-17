@@ -386,3 +386,11 @@ ggplot(gcc_weather_avail, aes(x = time, y = variable_presence)) +
 - Product ID *DP1.10022.001*
 - [Data portal link](https://data.neonscience.org/data-products/DP1.10022.001)
 - Summary: All sites were sampled, starting in 2016 for most, twice a week at 10 plots per site. Individuals from traps were identified to species. 
+
+## Docker
+
+`docker build -t reamy316/rstudio-verse:neon .`
+
+`docker run -it -p 8787:80 -e REDIRECT_URL=http://128.196.142.43:8787 reamy316/rstudio-verse:neon`
+
+`docker push reamy316/rstudio-verse:neon`
