@@ -297,7 +297,12 @@ ggplot() +
 
 #### Curated data details
 
-[The script](https://github.com/eco4cast/neon4cast-phenology/blob/master/phenology-workflow.R) for downloading and cleaning the phenology data provided by EFI Forecasting team
+[The script](https://github.com/eco4cast/neon4cast-phenology/blob/master/phenology-workflow.R) for downloading and cleaning the phenology data provided by EFI Forecasting team. Data up to the current date can be downloaded into this repo by doing the following: 
+
+```{r, eval=FALSE, results='hide', message=FALSE, warning=FALSE}
+targets_gcc <- readr::read_csv("https://data.ecoforecast.org/targets/phenology/phenology-targets.csv.gz")
+write.csv(targets_gcc, "pheno_images/targets_gcc.csv", row.names = FALSE)
+```
 
 Columns: 
 
