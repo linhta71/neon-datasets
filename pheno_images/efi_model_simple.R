@@ -1,9 +1,13 @@
 library(dplyr)
+library(tidyr)
 library(ggplot2)
 library(lubridate)
 library(data.table)
 
-gcc_raw <- fread('https://data.ecoforecast.org/targets/phenology/phenology-targets.csv.gz')
+
+file <- 'https://data.ecoforecast.org/targets/phenology/phenology-targets.csv.gz'
+
+gcc_raw <- fread(file)
 
 i <- 1
 #for(i in 0){
@@ -19,50 +23,65 @@ end_day <- day(end)
 middle_month <- ifelse(end_month - this_month == 2, this_month + 1, 0)
 
 gcc <- gcc_raw %>% 
-  mutate(month = month(time), year = year(time), day = day(time), doy = yday(time)) %>% 
+  mutate(month = month(time), year = year(time), day = day(time), doy = yday(time))# %>% 
   #  filter((month == this_month & day > this_day) | (month == end_month & day <= end_day  ) | (month > this_month & month < end_month)) %>% 
-  filter(!(month == 2 & day == 29))
+  #filter(!(month == 2 & day == 29))
+preds <- data.frame(date = now + days(1:180))
 
-means <- gcc %>% 
-  filter(!is.na(gcc_90) & !is.na(gcc_sd)) %>% 
-  group_by(month, day, siteID) %>% 
-  summarise(n = n(),
-            time =  ymd(paste(2021, sprintf("%02d", month), sprintf("%02d", min(day)), 
-                              sep = '-')),
-            gcc_sd =  median(gcc_sd)*4,
-            gcc_90 =  median(gcc_90)) %>% 
-  select(time, siteID, gcc_90, gcc_sd) %>% 
-  arrange(siteID, time) %>% 
-  unique() %>% 
-  ungroup()
 
-## create predictions
-preds_wide <- means %>% 
-  mutate(gcc_90 = frollmean(gcc_90, n = 16, align = 'center', na.rm = TRUE), 
-         gcc_sd = frollmean(gcc_sd*2.5, n = 20, align = 'center', na.rm = TRUE)) %>% 
-  filter((month == this_month & day > this_day) | (month == end_month & day <= end_day  ) | (month > this_month & month < end_month)) %>% 
-  mutate(forecast = 1, data_assimilation = 0, mean = signif(gcc_90, 2), sd = signif(gcc_sd, 1)) %>% 
-  select(time, siteID, forecast, data_assimilation, mean, sd)
+# BEGIN Simple Seasonal + Exponential Smoothing Model
+library(forecast)
+library(hts)
+library(tidyr)
+gcc_wide <- gcc %>% 
+  select(time, siteID, gcc_90) %>% 
+  pivot_wider(id_cols = time, names_from = siteID, values_from = gcc_90)
+
+gcc_ts <- ts(gcc_wide, frequency = 365)
+
+gcc_future <- forecast(gcc_ts, h = 180, level = c(0.3, 0.7))
+
+preds_wide <- gcc_future %>% as.data.frame %>% filter(!Series == 'time') %>% 
+  mutate(sd = `Hi 70` - `Lo 70`) %>% 
+  rename(siteID = Series, mean = `Point Forecast`) %>% 
+  mutate(time = rep(now + days(1:180), 8)) %>% 
+  select(time, siteID, mean, sd)
+# END Simple Seasonal + Exponential Smoothing Model
+
+# BEGIN historical mean + window model used through 2021-03-17
+# means <- gcc %>% 
+#   filter(!is.na(gcc_90) & !is.na(gcc_sd)) %>% 
+#   group_by(month, day, siteID) %>% 
+#   summarise(n = n(),
+#             time =  ymd(paste(2021, sprintf("%02d", month), sprintf("%02d", min(day)), 
+#                               sep = '-')),
+#             gcc_sd =  median(gcc_sd)*4,
+#             gcc_90 =  median(gcc_90)) %>% 
+#   select(time, siteID, gcc_90, gcc_sd) %>% 
+#   arrange(siteID, time) %>% 
+#   unique() %>% 
+#   ungroup()
+# 
+# ## create predictions
+# preds_wide <- means %>% 
+#   mutate(gcc_90 = frollmean(gcc_90, n = 16, align = 'center', na.rm = TRUE), 
+#          gcc_sd = frollmean(gcc_sd*2.5, n = 20, align = 'center', na.rm = TRUE)) %>% 
+#   filter((month == this_month & day > this_day) | (month == end_month & day <= end_day  ) | (month > this_month & month < end_month)) %>% 
+#   mutate(forecast = 1, data_assimilation = 0, mean = signif(gcc_90, 2), sd = signif(gcc_sd, 1)) %>% 
+#   select(time, siteID, forecast, data_assimilation, mean, sd)
+# END historical mean + window model
+
 preds <- preds_wide %>%  
   tidyr::pivot_longer(cols = c('mean', 'sd'), names_to = 'statistic', values_to = 'gcc_90')
-## when real time data are available
-# library(forecast)
-# library(hts)
-# library(tidyr)
-# gcc_wide <- gcc %>% 
-#  select(time, siteID, gcc_90) %>% 
-#  pivot_wider(id_cols = time, names_from = siteID, values_from = gcc_90)
-
-# gcc_ts <- ts(gcc_wide, frequency = 365)
-
-# a <- forecast(gcc_ts, h = 180)
 
 pred_filename <- paste('phenology', year(now),  sprintf("%02d", this_month),  sprintf("%02d", this_day), 'PEG.csv', sep = '-')
 readr::write_csv(preds, file = pred_filename)
 
+## TODO: Add Forecast output validator https://github.com/eco4cast/neon4cast#validate-a-forecast-file
+
 ## metadata
 ## from https://github.com/eco4cast/EFIstandards/blob/master/vignettes/logistic-metadata-example.Rmd
-
+## TODO: Replace w/ helper functions (when available) https://github.com/eco4cast/neon4cast#generate-forecast-metadata-in-eml
 library(EML)
 library(emld)
 emld::eml_version("eml-2.2.0")
@@ -185,6 +204,8 @@ eml_validate(my_eml)
 meta_data_filename <- gsub(pattern = 'csv', replacement = 'xml', pred_filename)
 write_eml(my_eml, meta_data_filename)
 
+## TODO: replace with neon4cast::submit(pred_filename, metadata = meta_data_filename) 
+## https://github.com/eco4cast/neon4cast#submit-a-forecast
 aws.s3::put_object(pred_filename, 
                    bucket = "submissions", 
                    region="data", 
@@ -193,3 +214,4 @@ aws.s3::put_object(meta_data_filename,
                    bucket = "submissions", 
                    region="data", 
                    base_url = "ecoforecast.org")
+# need to add line to submit gcc_predictions.R
