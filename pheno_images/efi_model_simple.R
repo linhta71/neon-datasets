@@ -23,9 +23,7 @@ end_day <- day(end)
 middle_month <- ifelse(end_month - this_month == 2, this_month + 1, 0)
 
 gcc <- gcc_raw %>% 
-  mutate(month = month(time), year = year(time), day = day(time), doy = yday(time))# %>% 
-  #  filter((month == this_month & day > this_day) | (month == end_month & day <= end_day  ) | (month > this_month & month < end_month)) %>% 
-  #filter(!(month == 2 & day == 29))
+  mutate(month = month(time), year = year(time), day = day(time), doy = yday(time))
 preds <- data.frame(date = now + days(1:180))
 
 
@@ -42,7 +40,7 @@ gcc_ts <- ts(gcc_wide, frequency = 365)
 gcc_future <- forecast(gcc_ts, h = 180, level = c(0.3, 0.7))
 
 preds_wide <- gcc_future %>% as.data.frame %>% filter(!Series == 'time') %>% 
-  mutate(sd = `Hi 70` - `Lo 70`) %>% 
+  mutate(sd = (`Hi 30` - `Lo 30`)/2) %>% 
   rename(siteID = Series, mean = `Point Forecast`) %>% 
   mutate(time = rep(now + days(1:180), 8)) %>% 
   select(time, siteID, mean, sd)
