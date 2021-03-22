@@ -213,3 +213,10 @@ aws.s3::put_object(meta_data_filename,
                    region="data", 
                    base_url = "ecoforecast.org")
 # need to add line to submit gcc_predictions.R
+
+
+# set up Cron
+# library(cronR)
+# f <- 'pheno_images/efi_model_simple.R'
+# cmd <- cron_rscript(f)
+# cron_add(command = cmd, frequency = 'daily', at='5PM', id = 'gcc_welsch')
