@@ -3,3 +3,6 @@
 .RData
 .Ruserdata
 *.Rproj
+
+#Ignore csv files in the inputs folder
+models/RFR/inputs/*.csv
